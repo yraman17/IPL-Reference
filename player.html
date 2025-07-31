@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Profile - IPL Reference</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1e3a8a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #1e3a8a;
+        }
+
+        .nav-link.active {
+            color: #1e3a8a;
+        }
+
+        .back-button {
+            background-color: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 250px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .dropdown-item .player-info {
+            font-size: 0.875rem;
+            color: #6c757d;
+            text-align: right;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .player-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+
+
+        .player-subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+
+        .player-info-header {
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .player-photo {
+            width: 150px;
+            height: 150px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-info-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .player-info-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+            min-width: 80px;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .info-link {
+            color: #1e3a8a;
+            text-decoration: none;
+        }
+
+        .info-link:hover {
+            text-decoration: underline;
+        }
+
+        .player-stats-preview {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+        .career-summary {
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1e3a8a;
+            padding-bottom: 0.5rem;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1px;
+            background-color: #e9ecef;
+        }
+
+        .batting-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(14, 1fr);
+            gap: 1px;
+            background-color: #e9ecef;
+        }
+
+        .summary-table thead,
+        .summary-table tbody,
+        .summary-table tr {
+            display: contents;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 0.75rem;
+            text-align: left;
+            background-color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .summary-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .stats-section {
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1e3a8a;
+            padding-bottom: 0.5rem;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            display: grid;
+            gap: 1px;
+            background-color: #e9ecef;
+        }
+
+        .batting-table {
+            grid-template-columns: repeat(14, 1fr);
+        }
+
+        .bowling-table {
+            grid-template-columns: repeat(13, 1fr);
+        }
+
+        .stats-table thead,
+        .stats-table tbody,
+        .stats-table tr {
+            display: contents;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: 0.75rem;
+            text-align: left;
+            background-color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .stats-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .stats-table tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        .career-row td {
+            background-color: #f8f9fa !important;
+            color: #333;
+        }
+
+        .placeholder {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 2rem;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 2rem;
+        }
+
+        .error {
+            text-align: center;
+            color: #dc3545;
+            font-style: italic;
+            padding: 2rem;
+        }
+
+        .team-link:hover {
+            color: #0f172a !important;
+            text-decoration: underline !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function Header() {
+            const [searchQuery, setSearchQuery] = React.useState('');
+            const [searchResults, setSearchResults] = React.useState([]);
+            const [isLoading, setIsLoading] = React.useState(false);
+
+            const handleSearch = async (query) => {
+                if (!query.trim()) {
+                    setSearchResults([]);
+                    return;
+                }
+
+                setIsLoading(true);
+                try {
+                    console.log('Searching for:', query);
+                    const response = await fetch('http://localhost:8000/players');
+                    console.log('Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Response data:', data);
+                    
+                    // Filter players based on search query
+                    const filtered = data.players.filter(player => 
+                        player.toLowerCase().includes(query.toLowerCase())
+                    ).slice(0, 10); // Show top 10 results
+                    
+                    // Get career data for each player to show years
+                    const playersWithYears = await Promise.all(
+                        filtered.map(async (player) => {
+                            try {
+                                const careerResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/career`);
+                                if (careerResponse.ok) {
+                                    const careerData = await careerResponse.json();
+                                    const batting = careerData.career_batting[0] || {};
+                                    const bowling = careerData.career_bowling[0] || {};
+                                    
+                                    // Get years from season data
+                                    const seasonResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`);
+                                    if (seasonResponse.ok) {
+                                        const seasonData = await seasonResponse.json();
+                                        const years = seasonData.batting_stats.map(stat => stat.season).sort();
+                                        const yearRange = years.length > 0 ? `${years[0]}-${years[years.length-1]}` : 'N/A';
+                                        return { name: player, years: yearRange };
+                                    }
+                                }
+                                return { name: player, years: 'N/A' };
+                            } catch (error) {
+                                console.error(`Error getting years for ${player}:`, error);
+                                return { name: player, years: 'N/A' };
+                            }
+                        })
+                    );
+                    
+                    console.log('Players with years:', playersWithYears);
+                    setSearchResults(playersWithYears);
+                } catch (error) {
+                    console.error('Search error:', error);
+                    setSearchResults([]);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            const handleInputChange = (e) => {
+                const query = e.target.value;
+                setSearchQuery(query);
+                handleSearch(query);
+            };
+
+            const handlePlayerClick = (player) => {
+                // Navigate to player page
+                window.location.href = `player.html?name=${encodeURIComponent(player.name)}`;
+            };
+
+            return (
+                <header className="header">
+                    <div className="header-content">
+                        <div className="logo" onClick={() => window.location.href = 'index.html'} style={{cursor: 'pointer'}}>
+                            <div className="logo-icon">🏏</div>
+                            IPL REFERENCE
+                        </div>
+                        <nav className="nav-links">
+                            <a href="index.html" className="nav-link">Home</a>
+                            <a href="players.html" className="nav-link">Players</a>
+                            <a href="teams.html" className="nav-link">Teams</a>
+                        </nav>
+                        <div className="search-container">
+                            <input 
+                                type="text" 
+                                className="search-input" 
+                                placeholder="Search for player"
+                                value={searchQuery}
+                                onChange={handleInputChange}
+                            />
+                            {searchResults.length > 0 && (
+                                <div className="search-dropdown">
+                                    {searchResults.map((player, index) => (
+                                        <div 
+                                            key={index} 
+                                            className="dropdown-item"
+                                            onClick={() => handlePlayerClick(player)}
+                                        >
+                                            <span className="player-name">{player.name}</span>
+                                            <span className="player-info">{player.years}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {isLoading && searchQuery && (
+                                <div className="search-dropdown">
+                                    <div className="dropdown-item">
+                                        <span className="player-info">Searching...</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </header>
+            );
+        }
+
+        function PlayerProfile() {
+            const [playerData, setPlayerData] = React.useState(null);
+            const [loading, setLoading] = React.useState(true);
+            const [error, setError] = React.useState(null);
+            
+                    // SORTING STATE
+        const [battingSortConfig, setBattingSortConfig] = React.useState({ column: null, direction: 'original' });
+        const [bowlingSortConfig, setBowlingSortConfig] = React.useState({ column: null, direction: 'original' });
+
+            React.useEffect(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const name = urlParams.get('name');
+                
+                if (!name) {
+                    setError('No player name provided');
+                    setLoading(false);
+                    return;
+                }
+
+                const loadPlayerData = async () => {
+                    try {
+                        // Load career data
+                        const careerResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(name)}/career`);
+                        let careerData = {};
+                        if (careerResponse.ok) {
+                            careerData = await careerResponse.json();
+                        }
+
+                        // Load batting stats
+                        const battingResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(name)}/batting`);
+                        let battingData = {};
+                        if (battingResponse.ok) {
+                            battingData = await battingResponse.json();
+                        }
+
+                        // Load bowling stats
+                        const bowlingResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(name)}/bowling`);
+                        let bowlingData = {};
+                        if (bowlingResponse.ok) {
+                            bowlingData = await bowlingResponse.json();
+                        }
+
+                                // Sort stats by season in ascending order and filter out seasons with 0 matches
+        const sortedBattingStats = (battingData.batting_stats || [])
+            .filter(stat => stat.matches > 0) // Filter out seasons with 0 matches
+            .sort((a, b) => a.season - b.season);
+        const sortedBowlingStats = (bowlingData.bowling_stats || [])
+            .filter(stat => stat.matches > 0) // Filter out seasons with 0 matches
+            .sort((a, b) => a.season - b.season);
+
+        setPlayerData({
+            name: name,
+            career_batting: careerData.career_batting || [],
+            career_bowling: careerData.career_bowling || [],
+            batting_stats: sortedBattingStats,
+            bowling_stats: sortedBowlingStats
+        });
+                    } catch (error) {
+                        console.error('Error loading player data:', error);
+                        setError('Failed to load player data');
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+
+                loadPlayerData();
+            }, []);
+
+            const formatNumber = (value) => {
+                if (value === null || value === undefined || value === '') return '-';
+                if (typeof value === 'number') {
+                    return value.toLocaleString();
+                }
+                return value;
+            };
+
+            const formatAverage = (value) => {
+                if (value === null || value === undefined || value === '') return '-';
+                if (typeof value === 'number') {
+                    return value.toFixed(2);
+                }
+                return value;
+            };
+
+            const formatEconomy = (economy, balls) => {
+                if (balls === 0 || balls === null || balls === undefined) return '-';
+                if (economy === null || economy === undefined || economy === '') return '-';
+                if (typeof economy === 'number') {
+                    return economy.toFixed(2);
+                }
+                return economy;
+            };
+
+                    // SORTING FUNCTIONS
+        const handleSort = (tableType, column) => {
+            if (tableType === 'batting') {
+                const newDirection = battingSortConfig.column === column 
+                    ? (battingSortConfig.direction === 'original' ? 'desc' : 
+                       battingSortConfig.direction === 'desc' ? 'asc' : 'original')
+                    : 'desc';
+                setBattingSortConfig({ column, direction: newDirection });
+            } else {
+                const newDirection = bowlingSortConfig.column === column 
+                    ? (bowlingSortConfig.direction === 'original' ? 'desc' : 
+                       bowlingSortConfig.direction === 'desc' ? 'asc' : 'original')
+                    : 'desc';
+                setBowlingSortConfig({ column, direction: newDirection });
+            }
+        };
+
+        const getSortedStats = (stats, sortConfig) => {
+            if (!stats || sortConfig.direction === 'original') {
+                return stats;
+            }
+
+            const sorted = [...stats].sort((a, b) => {
+                let aVal = a[sortConfig.column];
+                let bVal = b[sortConfig.column];
+
+                // Handle numeric values
+                if (typeof aVal === 'number' && typeof bVal === 'number') {
+                    return sortConfig.direction === 'desc' ? bVal - aVal : aVal - bVal;
+                }
+
+                // Handle string values
+                aVal = String(aVal || '');
+                bVal = String(bVal || '');
+                return sortConfig.direction === 'desc' 
+                    ? bVal.localeCompare(aVal) 
+                    : aVal.localeCompare(bVal);
+            });
+
+            return sorted;
+        };
+
+        const getSortIcon = (column, sortConfig) => {
+            if (sortConfig.column !== column) return '';
+            switch (sortConfig.direction) {
+                case 'desc': return '↓';
+                case 'asc': return '↑';
+                default: return '';
+            }
+        };
+
+            if (loading) {
+                return (
+                    <div>
+                        <Header />
+                        <div className="main-content">
+                            <div className="loading">Loading player data...</div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (error) {
+                return (
+                    <div>
+                        <Header />
+                        <div className="main-content">
+                            <div className="error">{error}</div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const careerBatting = playerData?.career_batting?.[0] || {};
+            const careerBowling = playerData?.career_bowling?.[0] || {};
+
+            return (
+                <div>
+                    <Header />
+                    <div className="main-content">
+                        {/* Player Info Header */}
+                        <div className="player-info-header">
+                            <div className="player-photo">
+                                🏏
+                            </div>
+                            <div className="player-info">
+                                <h1 className="player-info-name">{playerData?.name}</h1>
+                                <div className="player-info-details">
+                                    <div className="info-item">
+                                        <span className="info-label">Position:</span>
+                                        <span className="info-value">
+                                            {careerBatting.runs > 0 ? 'Batsman' : ''} 
+                                            {careerBowling.wickets > 0 ? (careerBatting.runs > 0 ? ' / ' : '') + 'Bowler' : ''}
+                                            {careerBatting.runs === 0 && careerBowling.wickets === 0 ? 'All-rounder' : ''}
+                                        </span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">Teams:</span>
+                                        <span className="info-value">
+                                            {playerData?.batting_stats?.map(stat => stat.team).filter((team, index, arr) => arr.indexOf(team) === index).join(', ')}
+                                        </span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">Seasons:</span>
+                                        <span className="info-value">
+                                            {playerData?.batting_stats?.map(stat => stat.season).filter((season, index, arr) => arr.indexOf(season) === index).length || 0} seasons ({playerData?.batting_stats?.map(stat => stat.season).filter((season, index, arr) => arr.indexOf(season) === index).join(', ')})
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {/* Career Summary */}
+                        <div className="career-summary">
+                            <h2 className="summary-title">Career Summary</h2>
+                            <table className="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>Total Runs</th>
+                                        <th>Batting Average</th>
+                                        <th>Strike Rate</th>
+                                        <th>Total Wickets</th>
+                                        <th>Bowling Average</th>
+                                        <th>Economy Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{formatNumber(careerBatting.runs)}</td>
+                                        <td>{formatAverage(careerBatting.batting_average)}</td>
+                                        <td>{formatAverage(careerBatting.strike_rate)}</td>
+                                        <td>{formatNumber(careerBowling.wickets)}</td>
+                                        <td>{formatAverage(careerBowling.bowling_average)}</td>
+                                        <td>{formatEconomy(careerBowling.economy_rate, careerBowling.balls_bowled)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Batting Stats by Season */}
+                        <div className="stats-section">
+                            <h2 className="stats-title">Batting Statistics by Season</h2>
+                            {playerData?.batting_stats && playerData.batting_stats.length > 0 ? (
+                                <table className="stats-table batting-table">
+                                    <thead>
+                                        <tr>
+                                            <th onClick={() => handleSort('batting', 'season')} style={{cursor: 'pointer'}}>
+                                                Season {getSortIcon('season', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', 'team')} style={{cursor: 'pointer'}}>
+                                                Team {getSortIcon('team', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', 'matches')} style={{cursor: 'pointer'}}>
+                                                Matches {getSortIcon('matches', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', 'innings')} style={{cursor: 'pointer'}}>
+                                                Innings {getSortIcon('innings', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', 'runs')} style={{cursor: 'pointer'}}>
+                                                Runs {getSortIcon('runs', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', 'balls')} style={{cursor: 'pointer'}}>
+                                                Balls {getSortIcon('balls', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', 'batting_average')} style={{cursor: 'pointer'}}>
+                                                Average {getSortIcon('batting_average', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', 'strike_rate')} style={{cursor: 'pointer'}}>
+                                                Strike Rate {getSortIcon('strike_rate', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', '50s')} style={{cursor: 'pointer'}}>
+                                                50s {getSortIcon('50s', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', '100s')} style={{cursor: 'pointer'}}>
+                                                100s {getSortIcon('100s', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', '4s')} style={{cursor: 'pointer'}}>
+                                                4s {getSortIcon('4s', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', '6s')} style={{cursor: 'pointer'}}>
+                                                6s {getSortIcon('6s', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', 'catches')} style={{cursor: 'pointer'}}>
+                                                Catches {getSortIcon('catches', battingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('batting', 'stumpings')} style={{cursor: 'pointer'}}>
+                                                Stumpings {getSortIcon('stumpings', battingSortConfig)}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {getSortedStats(playerData.batting_stats, battingSortConfig).map((stat, index) => (
+                                            <tr key={index}>
+                                                <td>{stat.season}</td>
+                                                <td>
+                                                    <span 
+                                                        className="team-link" 
+                                                        onClick={() => window.location.href = `teams.html?team=${encodeURIComponent(stat.team)}&year=${stat.season}`}
+                                                        style={{cursor: 'pointer', color: '#1e3a8a', textDecoration: 'underline'}}
+                                                    >
+                                                        {stat.team}
+                                                    </span>
+                                                </td>
+                                                <td>{formatNumber(stat.matches)}</td>
+                                                <td>{formatNumber(stat.innings)}</td>
+                                                <td>{formatNumber(stat.runs)}</td>
+                                                <td>{formatNumber(stat.balls)}</td>
+                                                <td>{formatAverage(stat.batting_average)}</td>
+                                                <td>{formatAverage(stat.strike_rate)}</td>
+                                                <td>{formatNumber(stat['50s'])}</td>
+                                                <td>{formatNumber(stat['100s'])}</td>
+                                                <td>{formatNumber(stat['4s'])}</td>
+                                                <td>{formatNumber(stat['6s'])}</td>
+                                                <td>{formatNumber(stat.catches)}</td>
+                                                <td>{formatNumber(stat.stumpings)}</td>
+                                            </tr>
+                                        ))}
+                                        <tr className="career-row">
+                                            <td><strong>Career</strong></td>
+                                            <td>-</td>
+                                            <td><strong>{formatNumber(careerBatting.matches)}</strong></td>
+                                            <td><strong>{formatNumber(careerBatting.innings)}</strong></td>
+                                            <td><strong>{formatNumber(careerBatting.runs)}</strong></td>
+                                            <td><strong>{formatNumber(careerBatting.balls)}</strong></td>
+                                            <td><strong>{formatAverage(careerBatting.batting_average)}</strong></td>
+                                            <td><strong>{formatAverage(careerBatting.strike_rate)}</strong></td>
+                                            <td><strong>{formatNumber(careerBatting['50s'])}</strong></td>
+                                            <td><strong>{formatNumber(careerBatting['100s'])}</strong></td>
+                                            <td><strong>{formatNumber(careerBatting['4s'])}</strong></td>
+                                            <td><strong>{formatNumber(careerBatting['6s'])}</strong></td>
+                                            <td><strong>{formatNumber(careerBatting.catches)}</strong></td>
+                                            <td><strong>{formatNumber(careerBatting.stumpings)}</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="placeholder">No batting statistics available</div>
+                            )}
+                        </div>
+
+                        {/* Bowling Stats by Season */}
+                        <div className="stats-section">
+                            <h2 className="stats-title">Bowling Statistics by Season</h2>
+                            {playerData?.bowling_stats && playerData.bowling_stats.length > 0 ? (
+                                <table className="stats-table bowling-table">
+                                    <thead>
+                                        <tr>
+                                            <th onClick={() => handleSort('bowling', 'season')} style={{cursor: 'pointer'}}>
+                                                Season {getSortIcon('season', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', 'team')} style={{cursor: 'pointer'}}>
+                                                Team {getSortIcon('team', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', 'matches')} style={{cursor: 'pointer'}}>
+                                                Matches {getSortIcon('matches', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', 'innings')} style={{cursor: 'pointer'}}>
+                                                Innings {getSortIcon('innings', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', 'balls_bowled')} style={{cursor: 'pointer'}}>
+                                                Balls {getSortIcon('balls_bowled', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', 'runs_conceded')} style={{cursor: 'pointer'}}>
+                                                Runs {getSortIcon('runs_conceded', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', 'wickets')} style={{cursor: 'pointer'}}>
+                                                Wickets {getSortIcon('wickets', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', 'bowling_average')} style={{cursor: 'pointer'}}>
+                                                Average {getSortIcon('bowling_average', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', 'economy_rate')} style={{cursor: 'pointer'}}>
+                                                Economy {getSortIcon('economy_rate', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', 'strike_rate')} style={{cursor: 'pointer'}}>
+                                                Strike Rate {getSortIcon('strike_rate', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', '3w_hauls')} style={{cursor: 'pointer'}}>
+                                                3w {getSortIcon('3w_hauls', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', '4w_hauls')} style={{cursor: 'pointer'}}>
+                                                4w {getSortIcon('4w_hauls', bowlingSortConfig)}
+                                            </th>
+                                            <th onClick={() => handleSort('bowling', '5w_hauls')} style={{cursor: 'pointer'}}>
+                                                5w {getSortIcon('5w_hauls', bowlingSortConfig)}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {getSortedStats(playerData.bowling_stats, bowlingSortConfig).map((stat, index) => (
+                                            <tr key={index}>
+                                                <td>{stat.season}</td>
+                                                <td>
+                                                    <span 
+                                                        className="team-link" 
+                                                        onClick={() => window.location.href = `teams.html?team=${encodeURIComponent(stat.team)}&year=${stat.season}`}
+                                                        style={{cursor: 'pointer', color: '#1e3a8a', textDecoration: 'underline'}}
+                                                    >
+                                                        {stat.team}
+                                                    </span>
+                                                </td>
+                                                <td>{formatNumber(stat.matches)}</td>
+                                                <td>{formatNumber(stat.innings)}</td>
+                                                <td>{formatNumber(stat.balls_bowled)}</td>
+                                                <td>{formatNumber(stat.runs_conceded)}</td>
+                                                <td>{formatNumber(stat.wickets)}</td>
+                                                <td>{formatAverage(stat.bowling_average)}</td>
+                                                <td>{formatEconomy(stat.economy_rate, stat.balls_bowled)}</td>
+                                                <td>{formatAverage(stat.strike_rate)}</td>
+                                                <td>{formatNumber(stat['3w_hauls'])}</td>
+                                                <td>{formatNumber(stat['4w_hauls'])}</td>
+                                                <td>{formatNumber(stat['5w_hauls'])}</td>
+                                            </tr>
+                                        ))}
+                                        <tr className="career-row">
+                                            <td><strong>Career</strong></td>
+                                            <td>-</td>
+                                            <td><strong>{formatNumber(careerBowling.matches)}</strong></td>
+                                            <td><strong>{formatNumber(careerBowling.innings)}</strong></td>
+                                            <td><strong>{formatNumber(careerBowling.balls_bowled)}</strong></td>
+                                            <td><strong>{formatNumber(careerBowling.runs_conceded)}</strong></td>
+                                            <td><strong>{formatNumber(careerBowling.wickets)}</strong></td>
+                                            <td><strong>{formatAverage(careerBowling.bowling_average)}</strong></td>
+                                            <td><strong>{formatEconomy(careerBowling.economy_rate, careerBowling.balls_bowled)}</strong></td>
+                                            <td><strong>{formatAverage(careerBowling.strike_rate)}</strong></td>
+                                            <td><strong>{formatNumber(careerBowling['3w_hauls'])}</strong></td>
+                                            <td><strong>{formatNumber(careerBowling['4w_hauls'])}</strong></td>
+                                            <td><strong>{formatNumber(careerBowling['5w_hauls'])}</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="placeholder">No bowling statistics available</div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function App() {
+            return <PlayerProfile />;
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html> 

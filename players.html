@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Players - IPL Reference</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1e3a8a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #1e3a8a;
+        }
+
+        .nav-link.active {
+            color: #1e3a8a;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+
+        .players-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .players-header {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .players-count {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            width: 200px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
+
+        .players-list {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .player-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .player-row:last-child {
+            border-bottom: none;
+        }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 1.1rem;
+        }
+
+        .player-details {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .player-teams {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .player-years {
+            color: #6c757d;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .error {
+            text-align: center;
+            padding: 3rem;
+            color: #dc3545;
+        }
+
+        .alphabet-section {
+            background-color: #f8f9fa;
+            padding: 0.5rem 2rem;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .players-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .player-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function Header() {
+            return (
+                <header className="header">
+                    <div className="header-content">
+                        <div className="logo" onClick={() => window.location.href = 'index.html'}>
+                            <div className="logo-icon">🏏</div>
+                            IPL REFERENCE
+                        </div>
+                        <nav className="nav-links">
+                            <a href="index.html" className="nav-link">Home</a>
+                            <a href="players.html" className="nav-link active">Players</a>
+                            <a href="teams.html" className="nav-link">Teams</a>
+                        </nav>
+                    </div>
+                </header>
+            );
+        }
+
+        function PlayersList() {
+            const [players, setPlayers] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+            const [error, setError] = React.useState(null);
+            const [searchQuery, setSearchQuery] = React.useState('');
+
+            React.useEffect(() => {
+                loadPlayers();
+            }, []);
+
+            const loadPlayers = async () => {
+                try {
+                    const response = await fetch('http://localhost:8000/players');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Get detailed info for each player
+                    const playersWithDetails = await Promise.all(
+                        data.players.map(async (player) => {
+                            try {
+                                const battingResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`);
+                                if (battingResponse.ok) {
+                                    const battingData = await battingResponse.json();
+                                    const years = battingData.batting_stats.map(stat => stat.season).sort();
+                                    const teams = battingData.batting_stats.map(stat => stat.team).filter((team, index, arr) => arr.indexOf(team) === index);
+                                    
+                                    return {
+                                        name: player,
+                                        years: years.length > 0 ? `${years[0]}-${years[years.length-1]}` : 'N/A',
+                                        teams: teams.join(', '),
+                                        lastInitial: getLastInitial(player)
+                                    };
+                                }
+                            } catch (error) {
+                                console.error(`Error getting details for ${player}:`, error);
+                            }
+                            return {
+                                name: player,
+                                years: 'N/A',
+                                teams: 'N/A',
+                                lastInitial: getLastInitial(player)
+                            };
+                        })
+                    );
+
+                    // Sort by last name
+                    const sortedPlayers = playersWithDetails.sort((a, b) => {
+                        const aLastName = getLastName(a.name);
+                        const bLastName = getLastName(b.name);
+                        return aLastName.localeCompare(bLastName);
+                    });
+
+                    setPlayers(sortedPlayers);
+                } catch (error) {
+                    console.error('Error loading players:', error);
+                    setError('Failed to load players');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const getLastName = (fullName) => {
+                const parts = fullName.trim().split(' ');
+                return parts[parts.length - 1] || fullName;
+            };
+
+            const getLastInitial = (fullName) => {
+                const lastName = getLastName(fullName);
+                const firstChar = lastName.charAt(0).toUpperCase();
+                // Only return if it's a letter (A-Z)
+                return /^[A-Z]$/.test(firstChar) ? firstChar : null;
+            };
+
+            const handlePlayerClick = (playerName) => {
+                window.location.href = `player.html?name=${encodeURIComponent(playerName)}`;
+            };
+
+            const filteredPlayers = players.filter(player =>
+                player.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            const groupedPlayers = filteredPlayers.reduce((groups, player) => {
+                const initial = player.lastInitial;
+                // Only group players whose last name starts with a letter
+                if (initial && /^[A-Z]$/.test(initial)) {
+                    if (!groups[initial]) {
+                        groups[initial] = [];
+                    }
+                    groups[initial].push(player);
+                }
+                return groups;
+            }, {});
+
+            if (loading) {
+                return (
+                    <div>
+                        <Header />
+                        <div className="main-content">
+                            <div className="loading">Loading players...</div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (error) {
+                return (
+                    <div>
+                        <Header />
+                        <div className="main-content">
+                            <div className="error">{error}</div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div>
+                    <Header />
+                    <div className="main-content">
+                        <h1 className="page-title">All Players</h1>
+                        <p className="page-subtitle">Browse all IPL players in alphabetical order</p>
+                        
+                        <div className="players-container">
+                            <div className="players-header">
+                                <div className="players-count">
+                                    {filteredPlayers.length} players
+                                </div>
+                                <div className="search-container">
+                                    <input 
+                                        type="text" 
+                                        className="search-input" 
+                                        placeholder="Search players..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="players-list">
+                                {Object.keys(groupedPlayers).sort().map(initial => (
+                                    <div key={initial}>
+                                        <div className="alphabet-section">
+                                            {initial}
+                                        </div>
+                                        {groupedPlayers[initial].map((player, index) => (
+                                            <div 
+                                                key={index} 
+                                                className="player-row"
+                                                onClick={() => handlePlayerClick(player.name)}
+                                            >
+                                                <div className="player-info">
+                                                    <div className="player-name">{player.name}</div>
+                                                    <div className="player-details">
+                                                        <span className="player-teams">{player.teams}</span>
+                                                        <span className="player-years"> • {player.years}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<PlayersList />, document.getElementById('root'));
+    </script>
+</body>
+</html> 

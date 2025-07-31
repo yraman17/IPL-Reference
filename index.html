@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Reference</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #1e3a8a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 250px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #1e3a8a;
+        }
+
+        .nav-link.active {
+            color: #1e3a8a;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+
+
+
+        .search-container {
+            position: relative;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .player-info {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function Header() {
+            const [searchQuery, setSearchQuery] = React.useState('');
+            const [searchResults, setSearchResults] = React.useState([]);
+            const [isLoading, setIsLoading] = React.useState(false);
+
+            const handleSearch = async (query) => {
+                if (!query.trim()) {
+                    setSearchResults([]);
+                    return;
+                }
+
+                setIsLoading(true);
+                try {
+                    console.log('Searching for:', query);
+                    const response = await fetch('http://localhost:8000/players');
+                    console.log('Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Response data:', data);
+                    
+                    // Filter players based on search query
+                    const filtered = data.players.filter(player => 
+                        player.toLowerCase().includes(query.toLowerCase())
+                    ).slice(0, 10); // Show top 10 results
+                    
+                    // Get career data for each player to show years
+                    const playersWithYears = await Promise.all(
+                        filtered.map(async (player) => {
+                            try {
+                                const careerResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/career`);
+                                if (careerResponse.ok) {
+                                    const careerData = await careerResponse.json();
+                                    const batting = careerData.career_batting[0] || {};
+                                    const bowling = careerData.career_bowling[0] || {};
+                                    
+                                    // Get years from season data
+                                    const seasonResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`);
+                                    if (seasonResponse.ok) {
+                                        const seasonData = await seasonResponse.json();
+                                        const years = seasonData.batting_stats.map(stat => stat.season).sort();
+                                        const yearRange = years.length > 0 ? `${years[0]}-${years[years.length-1]}` : 'N/A';
+                                        return { name: player, years: yearRange };
+                                    }
+                                }
+                                return { name: player, years: 'N/A' };
+                            } catch (error) {
+                                console.error(`Error getting years for ${player}:`, error);
+                                return { name: player, years: 'N/A' };
+                            }
+                        })
+                    );
+                    
+                    console.log('Players with years:', playersWithYears);
+                    setSearchResults(playersWithYears);
+                } catch (error) {
+                    console.error('Search error:', error);
+                    setSearchResults([]);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            const handleInputChange = (e) => {
+                const query = e.target.value;
+                setSearchQuery(query);
+                handleSearch(query);
+            };
+
+            const handlePlayerClick = (player) => {
+                // Navigate to player page
+                window.location.href = `player.html?name=${encodeURIComponent(player.name)}`;
+            };
+
+            return (
+                <header className="header">
+                    <div className="header-content">
+                        <div className="logo">
+                            <div className="logo-icon">🏏</div>
+                            IPL REFERENCE
+                        </div>
+                        <nav className="nav-links">
+                            <a href="index.html" className="nav-link active">Home</a>
+                            <a href="players.html" className="nav-link">Players</a>
+                            <a href="teams.html" className="nav-link">Teams</a>
+                        </nav>
+                        <div className="search-container">
+                            <input 
+                                type="text" 
+                                className="search-input" 
+                                placeholder="Search for player"
+                                value={searchQuery}
+                                onChange={handleInputChange}
+                            />
+                            {searchResults.length > 0 && (
+                                <div className="search-dropdown">
+                                    {searchResults.map((player, index) => (
+                                        <div 
+                                            key={index} 
+                                            className="dropdown-item"
+                                            onClick={() => handlePlayerClick(player)}
+                                        >
+                                            <span className="player-name">{player.name}</span>
+                                            <span className="player-info">{player.years}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {isLoading && searchQuery && (
+                                <div className="search-dropdown">
+                                    <div className="dropdown-item">
+                                        <span className="player-info">Searching...</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </header>
+            );
+        }
+
+        function App() {
+            return (
+                <div>
+                    <Header />
+                    <div className="main-content">
+                        <div className="hero-section">
+                            <h1 className="hero-title">IPL Player Statistics</h1>
+                            <p className="hero-subtitle">Comprehensive statistics for all IPL players</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html> 

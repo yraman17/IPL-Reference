@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teams - IPL Reference</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1e3a8a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #1e3a8a;
+        }
+
+        .nav-link.active {
+            color: #1e3a8a;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+
+        .selection-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .selection-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .selection-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .selection-subtitle {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .teams-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .team-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .team-item:hover {
+            border-color: #1e3a8a;
+            background-color: #f8f9ff;
+        }
+
+        .team-item.selected {
+            border-color: #1e3a8a;
+            background-color: #e3f2fd;
+        }
+
+        .team-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+
+        .team-abbreviation {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .filter-select {
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+            min-width: 200px;
+            background-color: white;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
+
+        .view-btn {
+            background-color: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .view-btn:hover {
+            background-color: #1e40af;
+        }
+
+        .view-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .players-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .players-header {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .team-year-info {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .players-count {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .players-list {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .player-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .player-row:last-child {
+            border-bottom: none;
+        }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 1.1rem;
+        }
+
+        .player-stats {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .player-matches {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .player-runs {
+            color: #6c757d;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .error {
+            text-align: center;
+            padding: 3rem;
+            color: #dc3545;
+        }
+
+        .placeholder {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .placeholder h3 {
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+
+        .placeholder p {
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select {
+                min-width: auto;
+            }
+
+            .players-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .player-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function Header() {
+            return (
+                <header className="header">
+                    <div className="header-content">
+                        <div className="logo" onClick={() => window.location.href = 'index.html'}>
+                            <div className="logo-icon">🏏</div>
+                            IPL REFERENCE
+                        </div>
+                        <nav className="nav-links">
+                            <a href="index.html" className="nav-link">Home</a>
+                            <a href="players.html" className="nav-link">Players</a>
+                            <a href="teams.html" className="nav-link active">Teams</a>
+                        </nav>
+                    </div>
+                </header>
+            );
+        }
+
+        function TeamsPage() {
+            const [teams, setTeams] = React.useState([]);
+            const [teamYears, setTeamYears] = React.useState([]);
+            const [selectedTeam, setSelectedTeam] = React.useState('');
+            const [selectedYear, setSelectedYear] = React.useState('');
+            const [teamPlayers, setTeamPlayers] = React.useState([]);
+            const [loading, setLoading] = React.useState(false);
+            const [error, setError] = React.useState(null);
+            const [hasSearched, setHasSearched] = React.useState(false);
+            const [step, setStep] = React.useState('select-team'); // 'select-team', 'select-year', 'show-players'
+
+            React.useEffect(() => {
+                // Check for URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const teamParam = urlParams.get('team');
+                const yearParam = urlParams.get('year');
+                
+                if (teamParam && yearParam) {
+                    // Auto-select team and year from URL parameters
+                    setSelectedTeam(teamParam);
+                    setSelectedYear(yearParam);
+                    setStep('show-players');
+                    // Load teams first, then load players
+                    loadTeams().then(() => {
+                        // Add a small delay to ensure teams are loaded
+                        setTimeout(() => {
+                            loadTeamPlayersWithParams(teamParam, yearParam);
+                        }, 100);
+                    });
+                } else {
+                    loadTeams();
+                }
+            }, []);
+
+            const getFullTeamName = (abbreviation) => {
+                const teamNames = {
+                    'MI': 'Mumbai Indians',
+                    'CSK': 'Chennai Super Kings',
+                    'RCB': 'Royal Challengers Bangalore',
+                    'KKR': 'Kolkata Knight Riders',
+                    'DC': 'Delhi Capitals',
+                    'PBKS': 'Punjab Kings',
+                    'RR': 'Rajasthan Royals',
+                    'SRH': 'Sunrisers Hyderabad',
+                    'GT': 'Gujarat Titans',
+                    'LSG': 'Lucknow Super Giants',
+                    'PWI': 'Pune Warriors India',
+                    'RPS': 'Rising Pune Supergiant',
+                    'GL': 'Gujarat Lions',
+                    'KTK': 'Kochi Tuskers Kerala',
+                    'DEC': 'Deccan Chargers',
+                    'DD': 'Delhi Daredevils',
+                    'KXIP': 'Kings XI Punjab'
+                };
+                return teamNames[abbreviation] || abbreviation;
+            };
+
+            const loadTeams = async () => {
+                try {
+                    // Get all players to extract teams
+                    const response = await fetch('http://localhost:8000/players');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Get detailed info for each player to extract teams
+                    const allTeams = new Set();
+                    
+                    for (const player of data.players.slice(0, 100)) { // Sample first 100 players for performance
+                        try {
+                            const battingResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`);
+                            if (battingResponse.ok) {
+                                const battingData = await battingResponse.json();
+                                
+                                // Extract teams
+                                battingData.batting_stats.forEach(stat => {
+                                    if (stat.team) {
+                                        allTeams.add(stat.team);
+                                    }
+                                });
+                            }
+                        } catch (error) {
+                            console.error(`Error getting details for ${player}:`, error);
+                        }
+                    }
+                    
+                    // Filter out "Unknown" team and sort
+                    const filteredTeams = Array.from(allTeams).filter(team => team !== 'Unknown').sort();
+                    setTeams(filteredTeams);
+                } catch (error) {
+                    console.error('Error loading teams:', error);
+                    setError('Failed to load teams');
+                }
+            };
+
+            const loadTeamYears = async (team) => {
+                setLoading(true);
+                setError(null);
+                
+                try {
+                    const response = await fetch('http://localhost:8000/players');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Get all years for the selected team (process only first 200 players for speed)
+                    const teamYearsSet = new Set();
+                    const playersToProcess = data.players.slice(0, 200);
+                    
+                    for (const player of playersToProcess) {
+                        try {
+                            const battingResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`);
+                            if (battingResponse.ok) {
+                                const battingData = await battingResponse.json();
+                                
+                                // Check if player played for selected team
+                                const teamStats = battingData.batting_stats.filter(stat => 
+                                    stat.team === team
+                                );
+                                
+                                // Extract years for this team
+                                teamStats.forEach(stat => {
+                                    if (stat.season) {
+                                        teamYearsSet.add(stat.season);
+                                    }
+                                });
+                            }
+                        } catch (error) {
+                            console.error(`Error getting details for ${player}:`, error);
+                        }
+                    }
+                    
+                    const sortedYears = Array.from(teamYearsSet).sort((a, b) => b - a); // Sort years descending
+                    setTeamYears(sortedYears);
+                    setStep('select-year');
+                } catch (error) {
+                    console.error('Error loading team years:', error);
+                    setError('Failed to load team years');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const loadTeamPlayers = async () => {
+                if (!selectedTeam || !selectedYear) {
+                    return;
+                }
+
+                setLoading(true);
+                setError(null);
+                setHasSearched(true);
+                setStep('show-players');
+            };
+
+            const loadTeamPlayersWithParams = async (team, year) => {
+                if (!team || !year) {
+                    return;
+                }
+
+                setLoading(true);
+                setError(null);
+                setHasSearched(true);
+                setStep('show-players');
+
+                try {
+                    const response = await fetch('http://localhost:8000/players');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Process all players in parallel batches for better performance
+                    const teamPlayersData = [];
+                    const batchSize = 50; // Process 50 players at a time
+                    
+                    for (let i = 0; i < data.players.length; i += batchSize) {
+                        const batch = data.players.slice(i, i + batchSize);
+                        
+                        // Process batch in parallel
+                        const batchPromises = batch.map(async (player) => {
+                            try {
+                                const [battingResponse, bowlingResponse] = await Promise.all([
+                                    fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`),
+                                    fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/bowling`)
+                                ]);
+                                
+                                let battingData = {};
+                                let bowlingData = {};
+                                
+                                if (battingResponse.ok) {
+                                    battingData = await battingResponse.json();
+                                }
+                                if (bowlingResponse.ok) {
+                                    bowlingData = await bowlingResponse.json();
+                                }
+                                
+                                // Check if player played for selected team in selected year (batting or bowling)
+                                const battingYearStats = battingData.batting_stats?.filter(stat => 
+                                    stat.season === parseInt(year) && stat.team === team
+                                ) || [];
+                                
+                                const bowlingYearStats = bowlingData.bowling_stats?.filter(stat => 
+                                    stat.season === parseInt(year) && stat.team === team
+                                ) || [];
+                                
+                                if (battingYearStats.length > 0 || bowlingYearStats.length > 0) {
+                                    const totalMatches = Math.max(
+                                        battingYearStats.reduce((sum, stat) => sum + (stat.matches || 0), 0),
+                                        bowlingYearStats.reduce((sum, stat) => sum + (stat.matches || 0), 0)
+                                    );
+                                    
+                                    const totalRuns = battingYearStats.reduce((sum, stat) => sum + (stat.runs || 0), 0);
+                                    const totalWickets = bowlingYearStats.reduce((sum, stat) => sum + (stat.wickets || 0), 0);
+                                    
+                                    const battingAvg = battingYearStats[0]?.batting_average || 0;
+                                    const strikeRate = battingYearStats[0]?.strike_rate || 0;
+                                    const economyRate = bowlingYearStats[0]?.economy_rate || 0;
+                                    
+                                    return {
+                                        name: player,
+                                        matches: totalMatches,
+                                        runs: totalRuns,
+                                        wickets: totalWickets,
+                                        batting_average: battingAvg,
+                                        strike_rate: strikeRate,
+                                        economy_rate: economyRate
+                                    };
+                                }
+                                return null;
+                            } catch (error) {
+                                console.error(`Error getting details for ${player}:`, error);
+                                return null;
+                            }
+                        });
+                        
+                        // Wait for batch to complete
+                        const batchResults = await Promise.all(batchPromises);
+                        const validResults = batchResults.filter(result => result !== null);
+                        teamPlayersData.push(...validResults);
+                    }
+                    
+                    // Sort by matches played (descending)
+                    teamPlayersData.sort((a, b) => b.matches - a.matches);
+                    
+                    setTeamPlayers(teamPlayersData);
+                } catch (error) {
+                    console.error('Error loading team players:', error);
+                    setError('Failed to load team players');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handlePlayerClick = (playerName) => {
+                window.location.href = `player.html?name=${encodeURIComponent(playerName)}`;
+            };
+
+            const formatNumber = (value) => {
+                if (value === null || value === undefined || value === '') return '0';
+                if (typeof value === 'number') {
+                    return value.toLocaleString();
+                }
+                return value;
+            };
+
+            const formatAverage = (value) => {
+                if (value === null || value === undefined || value === '') return '0.00';
+                if (typeof value === 'number') {
+                    return value.toFixed(2);
+                }
+                return value;
+            };
+
+            return (
+                <div>
+                    <Header />
+                    <div className="main-content">
+                        <h1 className="page-title">Teams</h1>
+                        <p className="page-subtitle">View all players who played for a specific team in a given year</p>
+                        
+                        {step === 'select-team' && (
+                            <div className="selection-container">
+                                <div className="selection-header">
+                                    <h2 className="selection-title">Select a Team</h2>
+                                    <p className="selection-subtitle">Click on a team to see all the years they participated in IPL</p>
+                                </div>
+                                
+                                <div className="teams-list">
+                                    {teams.map(team => (
+                                        <div 
+                                            key={team}
+                                            className={`team-item ${selectedTeam === team ? 'selected' : ''}`}
+                                            onClick={() => {
+                                                setSelectedTeam(team);
+                                                loadTeamYears(team);
+                                            }}
+                                        >
+                                            <div className="team-name">{getFullTeamName(team)}</div>
+                                            <div className="team-abbreviation">{team}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 'select-year' && (
+                            <div className="selection-container">
+                                <div className="selection-header">
+                                    <h2 className="selection-title">{getFullTeamName(selectedTeam)} - Select Year</h2>
+                                    <p className="selection-subtitle">Choose a year to see all players who represented {getFullTeamName(selectedTeam)}</p>
+                                </div>
+                                
+                                <div className="filters">
+                                    <div className="filter-group">
+                                        <label className="filter-label">Year</label>
+                                        <select 
+                                            className="filter-select"
+                                            value={selectedYear}
+                                            onChange={(e) => setSelectedYear(e.target.value)}
+                                        >
+                                            <option value="">Select a year</option>
+                                            {teamYears.map(year => (
+                                                <option key={year} value={year}>{year}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    
+                                    <button 
+                                        className="view-btn"
+                                        disabled={!selectedYear}
+                                        onClick={loadTeamPlayers}
+                                    >
+                                        View Players
+                                    </button>
+                                    
+                                    <button 
+                                        className="view-btn"
+                                        style={{backgroundColor: '#6c757d'}}
+                                        onClick={() => {
+                                            setStep('select-team');
+                                            setSelectedTeam('');
+                                            setSelectedYear('');
+                                            setTeamYears([]);
+                                        }}
+                                    >
+                                        Back to Teams
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 'show-players' && (
+                            <>
+                                {loading ? (
+                                    <div className="loading">Loading team players...</div>
+                                ) : error ? (
+                                    <div className="error">{error}</div>
+                                ) : (
+                                    <div className="players-container">
+                                        <div className="players-header">
+                                            <div className="team-year-info">
+                                                {getFullTeamName(selectedTeam)} - {selectedYear}
+                                            </div>
+                                            <div className="players-count">
+                                                {teamPlayers.length} players
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="players-list">
+                                            {teamPlayers.length > 0 ? (
+                                                teamPlayers.map((player, index) => (
+                                                    <div 
+                                                        key={index} 
+                                                        className="player-row"
+                                                        onClick={() => handlePlayerClick(player.name)}
+                                                    >
+                                                        <div className="player-info">
+                                                            <div className="player-name">{player.name}</div>
+                                                                                                                <div className="player-stats">
+                                                        <span className="player-matches">{player.matches} matches</span>
+                                                        <span className="player-runs"> • {formatNumber(player.runs)} runs</span>
+                                                        <span className="player-runs"> • Avg: {formatAverage(player.batting_average)}</span>
+                                                        <span className="player-runs"> • SR: {formatAverage(player.strike_rate)}</span>
+                                                        <span className="player-runs"> • {formatNumber(player.wickets)} wkts</span>
+                                                        <span className="player-runs"> • Econ: {formatAverage(player.economy_rate)}</span>
+                                                    </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="placeholder">
+                                                    <h3>No Players Found</h3>
+                                                    <p>No players found for {selectedTeam} in {selectedYear}.</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        )}
+
+                        {step === 'select-team' && loading && (
+                            <div className="loading">Loading team years...</div>
+                        )}
+
+                        {step === 'select-team' && !hasSearched && !loading && (
+                            <div className="placeholder">
+                                <h3>No Team Selected</h3>
+                                <p>Select a team above to see all the years they participated in IPL.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<TeamsPage />, document.getElementById('root'));
+    </script>
+</body>
+</html> 
