@@ -1,60 +1,42 @@
-# IPL Reference
+# 🏏 IPL Reference  
 
-A comprehensive cricket statistics platform for the Indian Premier League (IPL), featuring detailed player analytics and team statistics. Data sourced from [CricSheets](https://cricsheet.org/).
+A modern web app for exploring **Indian Premier League (IPL)** cricket statistics, featuring detailed player and team analytics. Built with **FastAPI + React**, powered by data from [CricSheets](https://cricsheet.org/).  
 
-## Features
+🔗 **Live Demo**: [Vercel Frontend](https://ipl-reference.vercel.app)
 
-- **Player Search**: Find any IPL player with autocomplete search functionality
-- **Detailed Statistics**: View comprehensive batting and bowling statistics for each player, either season by season or for their entire career.
-- **Team Analysis**: Browse players by team and season
+---
 
-## Screenshots
+## Features  
 
-### Main Pages
-![Home Page](screenshots/home-page.png)
-*Search for any IPL player with autocomplete functionality*
+- **Smart Player Search** – Instant autocomplete with player names + career span  
+- **Detailed Statistics** – Season-by-season & career-wide batting/bowling stats  
+- **Team Analysis** – Explore team rosters year by year  
+- **Interactive Tables** – Sort stats by runs, wickets, averages, strike rate, etc.  
+- **Clean UI** – Responsive, modern design  
 
-![Players Directory](screenshots/players-directory.png)
-*Complete A-Z listing of all IPL players with teams and years*
+---
 
-![Teams Page](screenshots/teams-page.png)
-*Team selection interface*
+## Tech Stack  
 
-![Team Year Results](screenshots/team-year-results.png)
-*Team-year player results with comprehensive statistics*
+- **Frontend**: HTML5, CSS3, JavaScript, React (via Babel), deployed on **Vercel**  
+- **Backend**: Python, FastAPI, Uvicorn, deployed on **Render**  
+- **Data Processing**: Pandas, JSON (CricSheets datasets)  
 
-### Player Profile
-![Player Profile Header](screenshots/player-profile-header.png)
-*Player information header with photo placeholder and basic stats*
+---
 
-![Player Batting Stats](screenshots/player-batting-stats.png)
-*Batting statistics table with comprehensive metrics*
-
-![Player Bowling Stats](screenshots/player-bowling-stats.png)
-*Bowling statistics table with comprehensive metrics*
-
-![Sorting Feature](screenshots/sorting.png)
-*Stats table sorting functionality*
-
-## Technologies Used
-
-- **Frontend**: HTML5, CSS3, JavaScript, React (via Babel)
-- **Backend**: Python, FastAPI, Uvicorn
-- **Data Processing**: Pandas, JSON
-
-## Project Structure
+## Project Structure  
 
 ```
 IPL Reference/
-├── api/                    # FastAPI backend
-├── player_data/           # Processed CSV data
-├── ipl_data/             # Raw JSON match data (CricSheets)
-├── index.html            # Home page
-├── player.html           # Player profile page
-├── players.html          # Players directory
-├── teams.html            # Team players page
-├── parse_and_aggregate.py # Raw JSON data processing
-└── career_stats.py       # Career stat calculations
+├── api/ # FastAPI backend
+├── player_data/ # Processed CSV data
+├── ipl_data/ # Raw JSON match data (CricSheets)
+├── index.html # Home page
+├── player.html # Player profile page
+├── players.html # Player directory
+├── teams.html # Team players page
+├── parse_and_aggregate.py # Raw JSON → CSV processing
+└── career_stats.py # Career stats aggregation
 ```
 
 ## Installation & Setup
