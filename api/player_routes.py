@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from .data_loader import batting_df, bowling_df, career_batting_df, career_bowling_df
+from data_loader import batting_df, bowling_df, career_batting_df, career_bowling_df
 from typing import List
 
 router = APIRouter()
