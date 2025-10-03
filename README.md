@@ -2,7 +2,7 @@
 
 A modern web app for exploring **Indian Premier League (IPL)** cricket statistics, featuring detailed player and team analytics. Built with **FastAPI + React**, powered by data from [CricSheets](https://cricsheet.org/).  
 
-🔗 **Live Demo**: [Vercel Frontend](https://ipl-reference.vercel.app)
+🔗 **Live Demo**: [Vercel Frontend](https://ipl-reference.vercel.app) (May take around 30 seconds to load if link hasn't been used for a while)
 
 ---
 
