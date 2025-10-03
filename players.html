@@ -225,6 +225,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        const API_BASE = "/api";
         function Header() {
             return (
                 <header className="header">
@@ -255,7 +256,7 @@
 
             const loadPlayers = async () => {
                 try {
-                    const response = await fetch('http://localhost:8000/players');
+                    const response = await fetch(`${API_BASE}/players`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -266,7 +267,7 @@
                     const playersWithDetails = await Promise.all(
                         data.players.map(async (player) => {
                             try {
-                                const battingResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`);
+                                const battingResponse = await fetch(`${API_BASE}/player/${encodeURIComponent(player)}/batting`);
                                 if (battingResponse.ok) {
                                     const battingData = await battingResponse.json();
                                     const years = battingData.batting_stats.map(stat => stat.season).sort();

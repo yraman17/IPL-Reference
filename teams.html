@@ -344,6 +344,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        const API_BASE = "/api";
         function Header() {
             return (
                 <header className="header">
@@ -422,7 +423,7 @@
             const loadTeams = async () => {
                 try {
                     // Get all players to extract teams
-                    const response = await fetch('http://localhost:8000/players');
+                    const response = await fetch(`${API_BASE}/players`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -434,7 +435,7 @@
                     
                     for (const player of data.players.slice(0, 100)) { // Sample first 100 players for performance
                         try {
-                            const battingResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`);
+                            const battingResponse = await fetch(`${API_BASE}/player/${encodeURIComponent(player)}/batting`);
                             if (battingResponse.ok) {
                                 const battingData = await battingResponse.json();
                                 
@@ -464,7 +465,7 @@
                 setError(null);
                 
                 try {
-                    const response = await fetch('http://localhost:8000/players');
+                    const response = await fetch(`${API_BASE}/players`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -477,7 +478,7 @@
                     
                     for (const player of playersToProcess) {
                         try {
-                            const battingResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`);
+                            const battingResponse = await fetch(`${API_BASE}/player/${encodeURIComponent(player)}/batting`);
                             if (battingResponse.ok) {
                                 const battingData = await battingResponse.json();
                                 
@@ -531,7 +532,7 @@
                 setStep('show-players');
 
                 try {
-                    const response = await fetch('http://localhost:8000/players');
+                    const response = await fetch(`${API_BASE}/players`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -549,8 +550,8 @@
                         const batchPromises = batch.map(async (player) => {
                             try {
                                 const [battingResponse, bowlingResponse] = await Promise.all([
-                                    fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`),
-                                    fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/bowling`)
+                                    fetch(`${API_BASE}/player/${encodeURIComponent(player)}/batting`),
+                                    fetch(`${API_BASE}/player/${encodeURIComponent(player)}/bowling`)
                                 ]);
                                 
                                 let battingData = {};

@@ -171,6 +171,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        const API_BASE = "/api";
         function Header() {
             const [searchQuery, setSearchQuery] = React.useState('');
             const [searchResults, setSearchResults] = React.useState([]);
@@ -185,7 +186,7 @@
                 setIsLoading(true);
                 try {
                     console.log('Searching for:', query);
-                    const response = await fetch('http://localhost:8000/players');
+                    const response = await fetch(`${API_BASE}/players`);
                     console.log('Response status:', response.status);
                     
                     if (!response.ok) {
@@ -204,14 +205,14 @@
                     const playersWithYears = await Promise.all(
                         filtered.map(async (player) => {
                             try {
-                                const careerResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/career`);
+                                const careerResponse = await fetch(`${API_BASE}/player/${encodeURIComponent(player)}/career`);
                                 if (careerResponse.ok) {
                                     const careerData = await careerResponse.json();
                                     const batting = careerData.career_batting[0] || {};
                                     const bowling = careerData.career_bowling[0] || {};
                                     
                                     // Get years from season data
-                                    const seasonResponse = await fetch(`http://localhost:8000/player/${encodeURIComponent(player)}/batting`);
+                                    const seasonResponse = await fetch(`${API_BASE}/player/${encodeURIComponent(player)}/batting`);
                                     if (seasonResponse.ok) {
                                         const seasonData = await seasonResponse.json();
                                         const years = seasonData.batting_stats.map(stat => stat.season).sort();
