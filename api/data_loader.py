@@ -1,13 +1,15 @@
+from pathlib import Path
 import pandas as pd
-import os
+BASE_DIR = Path(__file__).resolve().parent.parent  # repo root
+PLAYER_DATA_DIR = BASE_DIR / "player_data"
 
 def load_data():
     """Load CSV data with error handling"""
     try:
-        batting_df = pd.read_csv("player_data/batting_stats.csv")
-        bowling_df = pd.read_csv("player_data/bowling_stats.csv")
-        career_batting_df = pd.read_csv("player_data/career_batting_stats.csv")
-        career_bowling_df = pd.read_csv("player_data/career_bowling_stats.csv")
+        batting_df = pd.read_csv(PLAYER_DATA_DIR / "batting_stats.csv")
+        bowling_df = pd.read_csv(PLAYER_DATA_DIR / "bowling_stats.csv")
+        career_batting_df = pd.read_csv(PLAYER_DATA_DIR / "career_batting_stats.csv")
+        career_bowling_df = pd.read_csv(PLAYER_DATA_DIR /"career_bowling_stats.csv")
         
         print("Data loaded successfully!")
         print(f"batting_df: {batting_df.shape}, columns: {batting_df.columns.tolist()}")
